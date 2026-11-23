@@ -1,0 +1,60 @@
+name: Java Matrix Include Exclude
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} · Java ${{ matrix.java }} ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        java: [17, 21, 24]
+
+        exclude:
+          - os: macos-latest
+            java: 17
+
+          - os: macos-latest
+            java: 21
+
+        include:
+          # Existing combination -> adds label
+          - os: ubuntu-latest
+            java: 24
+            label: "(primary)"
+
+          # New combination -> creates extra job
+          - os: ubuntu-latest
+            java: 11
+            label: "(legacy support)"
+
+    defaults:
+      run:
+        working-directory: springboot-no-db
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Show Current Combination
+        run: |
+          echo "OS   : ${{ matrix.os }}"
+          echo "Java : ${{ matrix.java }}"
+          echo "Label: ${{ matrix.label }}"
+          java -version
+
+      - name: Build
+        run: mvn clean compile
+
+      - name: Test
+        run: mvn test
