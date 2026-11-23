@@ -1,0 +1,33 @@
+name: Java Matrix Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test on Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java: [17, 21]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Verify Java Version
+        run: |
+          echo "matrix.java = ${{ matrix.java }}"
+          java -version
+
+      - name: Build
+        run: mvn clean compile
+
+      - name: Test
+        run: mvn test
