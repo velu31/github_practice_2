@@ -35,7 +35,7 @@ jobs:
         if: matrix.java == 17
         run: |
           echo "Simulating a bug on Java 17"
-          exit 1
+          
 
       - name: Build
         run: mvn clean compile
