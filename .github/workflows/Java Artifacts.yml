@@ -1,3 +1,4 @@
+
 name: Java Artifacts
 
 on:
@@ -5,7 +6,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     defaults:
@@ -32,3 +32,24 @@ jobs:
           path: springboot-no-db/target/*.jar
           retention-days: 7
           if-no-files-found: error
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download JAR Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: springboot-jar
+          path: downloaded-jar
+
+      - name: Verify Downloaded Files
+        run: |
+          echo "This is a new runner"
+          echo "Artifact downloaded successfully"
+          ls -R downloaded-jar
+
+      - name: Show JAR File
+        run: |
+          find downloaded-jar -name "*.jar"
