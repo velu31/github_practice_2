@@ -53,3 +53,22 @@ jobs:
       - name: Show JAR File
         run: |
           find downloaded-jar -name "*.jar"
+
+  publish-logs-on-failure:
+    needs: [build, test]
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Diagnostic Log
+        run: |
+          mkdir -p logs
+          echo "diagnostics for run ${{ github.run_id }}" > logs/debug.log
+
+      - name: Upload Failure Logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-logs
+          path: logs/
+          retention-days: 7
+          if-no-files-found: error
