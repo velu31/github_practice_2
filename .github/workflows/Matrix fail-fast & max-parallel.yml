@@ -10,11 +10,14 @@ jobs:
 
     strategy:
       fail-fast: true
-
       max-parallel: 2
 
       matrix:
         java: [17, 21, 24]
+
+    defaults:
+      run:
+        working-directory: springboot-no-db
 
     steps:
       - uses: actions/checkout@v5
@@ -35,7 +38,7 @@ jobs:
         if: matrix.java == 17
         run: |
           echo "Simulating a bug on Java 17"
-          
+          exit 1
 
       - name: Build
         run: mvn clean compile
