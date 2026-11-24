@@ -1,0 +1,47 @@
+name: 23 - Matrix fail-fast & max-parallel
+
+on:
+  workflow_dispatch:
+
+jobs:
+  controlled-matrix:
+    name: Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      max-parallel: 2
+
+      matrix:
+        java: [17, 21, 24]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Do some work
+        run: |
+          echo "Testing on Java ${{ matrix.java }}"
+          java -version
+          sleep 15
+
+      - name: This one row fails on purpose
+        if: matrix.java == 17
+        run: |
+          echo "Simulating a bug on Java 17"
+          exit 1
+
+      - name: Build
+        run: mvn clean compile
+
+      - name: Test
+        run: mvn test
+
+      - name: Finish
+        run: echo "Java ${{ matrix.java }} finished successfully."
