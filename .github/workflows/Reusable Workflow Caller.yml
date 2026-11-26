@@ -1,0 +1,42 @@
+name: 28 - Reusable Java Workflow Caller
+
+on:
+  workflow_dispatch
+
+jobs:
+
+  test-defaults:
+    uses: ./.github/workflows/27-reusable-java-callee.yml
+
+  test-java-17:
+    uses: ./.github/workflows/27-reusable-java-callee.yml
+    with:
+      java-version: '17'
+      run-tests: false
+
+  test-with-secret:
+    uses: ./.github/workflows/27-reusable-java-callee.yml
+    with:
+      java-version: '21'
+    secrets:
+      API_KEY: ${{ secrets.MY_API_KEY }}
+
+  test-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17', '21']
+
+    uses: ./.github/workflows/27-reusable-java-callee.yml
+
+    with:
+      java-version: ${{ matrix.java }}
+
+  report:
+    needs: test-defaults
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Read Output
+        run: |
+          echo "Reusable workflow tested Java ${{ needs.test-defaults.outputs.tested-version }}"
