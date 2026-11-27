@@ -1,0 +1,28 @@
+name: 29 - Composite Action Java
+
+on:
+  workflow_dispatch
+
+jobs:
+  the-long-way:
+    name: Before - Repeated Java Steps
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: springboot-no-db
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build
+        run: mvn clean install
+
+      - name: Test
+        run: mvn test
