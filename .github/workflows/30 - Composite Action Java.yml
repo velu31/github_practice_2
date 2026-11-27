@@ -1,0 +1,31 @@
+name: 29 - Composite Action Java
+
+on:
+  workflow_dispatch
+
+jobs:
+  build-and-test:
+    name: Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['17', '21']
+
+    defaults:
+      run:
+        working-directory: springboot-no-db
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Java and Build
+        id: setup
+        uses: ./.github/actions/java-ci-setup
+        with:
+          java-version: ${{ matrix.java }}
+          working-directory: springboot-no-db
+
+      - name: Run Tests
+        run: mvn test
